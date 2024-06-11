@@ -264,7 +264,7 @@ NK_API void nk_console_check_up_down(nk_console* widget, struct nk_rect bounds) 
     }
 
     // Only process an active input once.
-    if (top->input_processed == nk_false) {
+    if (widget->columns >= 0 && top->input_processed == nk_false) {
         // Page Up
         if (nk_console_button_pushed(top, NK_GAMEPAD_BUTTON_LB)) {
             int widgetIndex = nk_console_get_widget_index(widget);
@@ -319,23 +319,23 @@ NK_API void nk_console_check_up_down(nk_console* widget, struct nk_rect bounds) 
             }
             top->input_processed = nk_true;
         }
-        // Back
-        else if (nk_console_button_pushed(top, NK_GAMEPAD_BUTTON_B)) {
-            if (top->activeParent == NULL) {
-                return;
-            }
-
-            if (widget->parent != NULL) {
-                if (widget->parent == top) {
-                    top->activeParent = top;
-                }
-                else if (widget->parent->parent != NULL) {
-                    top->activeParent = widget->parent->parent;
-                }
-            }
-
-            top->input_processed = nk_true;
+    }
+    // Back
+    if (top->input_processed == nk_false && nk_console_button_pushed(top, NK_GAMEPAD_BUTTON_B)) {
+        if (top->activeParent == NULL) {
+            return;
         }
+
+        if (widget->parent != NULL) {
+            if (widget->parent == top) {
+                top->activeParent = top;
+            }
+            else if (widget->parent->parent != NULL) {
+                top->activeParent = widget->parent->parent;
+            }
+        }
+
+        top->input_processed = nk_true;
     }
 }
 
